@@ -59,7 +59,7 @@ public final class ThermalMonitor {
     // MARK: - Tick Timing
 
     /// Thermal tick interval in seconds. Fan control runs at this rate.
-    private let tickInterval: Float
+    private var tickInterval: Float   // patched: var so start(interval:) can sync it
 
     /// Monitor cadence: process capture + anomaly detection every N thermal ticks.
     /// At 100ms thermal tick, 20 × 0.1s = 2 seconds.
@@ -122,6 +122,7 @@ public final class ThermalMonitor {
 
     public func start(interval: TimeInterval = 0.1) {
         stop()
+        self.tickInterval = Float(interval)   // patched: keep tick-derived math in sync with actual poll rate
 
         let timer = DispatchSource.makeTimerSource(queue: queue)
         timer.schedule(deadline: .now(), repeating: interval)

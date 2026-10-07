@@ -351,7 +351,7 @@ struct Watch: ParsableCommand {
         abstract: "Monitor temps and auto-adjust fans based on a profile"
     )
 
-    @Option(name: .shortAndLong, help: "Profile: silent, balanced, performance, max")
+    @Option(name: .shortAndLong, help: "Profile: silent, balanced, performance, max, smart")
     var profile: String = "balanced"
 
     @Option(name: .shortAndLong, help: "Poll interval in seconds (default 0.1 = 100ms)")
@@ -362,7 +362,7 @@ struct Watch: ParsableCommand {
 
     func run() throws {
         warnIfDaemonVersionMismatch()
-        let profiles = FanProfile.builtIn
+        let profiles = FanProfile.builtIn + [FanProfile.smart]   // patched: expose Smart in watch
         guard let selectedProfile = profiles.first(where: { $0.id == profile }) else {
             throw ValidationError(
                 "Unknown profile '\(profile)'. Options: \(profiles.map(\.id).joined(separator: ", "))"
